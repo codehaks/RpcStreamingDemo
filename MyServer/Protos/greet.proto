@@ -1,0 +1,21 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "MyServer";
+
+package scalar;
+
+service Numerics {
+
+  rpc SendNumber (stream NumberRequest) returns (NumberResponse);
+}
+
+message NumberRequest {
+  int32 value = 1;
+}
+
+message NumberResponse {
+  bool result = 1;
+}
+
+
