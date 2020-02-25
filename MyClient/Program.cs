@@ -18,30 +18,33 @@ namespace MyClient
 
             var client = new MyServer.Numerics.NumericsClient(channel);
 
-
-            //var response = new NumberResponse() { Result = -5 };
-            //using var streamingCall = client.SendNumber(response);
-
-            //try
-            //{
-            //    await foreach (var number in streamingCall.ResponseStream.ReadAllAsync())
-            //    {
-
-            //        Console.WriteLine($"{number.Value}");
-            //    }
-
-
-            //}
-            //catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
-            //{
-            //    Console.WriteLine("Stream cancelled.");
-            //}
-
+            await StreamNumbersFromClientToServer(client);
 
             Console.ReadLine();
 
         }
 
-       
+        static Random RNG = new Random();
+
+        private static async Task StreamNumbersFromClientToServer(NumericsClient client)
+        {
+            using (var call = client.SendNumber())
+            {
+                for (var i = 0; i < 10; i++)
+                {
+                    var number = RNG.Next(5);
+                    Console.WriteLine($"Sending {number}");
+                    await call.RequestStream.WriteAsync(new NumberRequest { Value = number });
+                    await Task.Delay(1000);
+                }
+
+                await call.RequestStream.CompleteAsync();
+
+                //var response = await call;
+                //Console.WriteLine($"Result: {response.Result}");
+            }
+        }
+
+
     }
 }
