@@ -28,21 +28,32 @@ namespace MyClient
 
         private static async Task StreamNumbersFromClientToServer(NumericsClient client)
         {
-            using (var call = client.SendNumber())
-            {
-                for (var i = 0; i < 10; i++)
-                {
-                    var number = RNG.Next(5);
-                    Console.WriteLine($"Sending {number}");
-                    await call.RequestStream.WriteAsync(new NumberRequest { Value = number });
-                    await Task.Delay(1000);
-                }
+            using var call = client.SendNumber();
 
-                await call.RequestStream.CompleteAsync();
+            var t1 = Task.Run(async () =>
+             {
+                 for (var i = 0; i < 100; i++)
+                 {
+                     var number = RNG.Next(5);
+                     Console.WriteLine($"Sending {number}");
+                     await call.RequestStream.WriteAsync(new NumberRequest { Value = number });
+                     await Task.Delay(new Random().Next(1,5)*100);
+                 }
+             });
 
-                //var response = await call;
-                //Console.WriteLine($"Result: {response.Result}");
-            }
+            var t2 = Task.Run(async () =>
+             {
+                 await foreach (var number in call.ResponseStream.ReadAllAsync())
+                 {
+                     Console.WriteLine($"Recieved By power -> {number.Result}");
+                 }
+             });
+
+            await Task.WhenAll(t1, t2);
+
+
+
+
         }
 
 
