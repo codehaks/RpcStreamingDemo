@@ -7,7 +7,7 @@ package scalar;
 
 service Numerics {
 
-  rpc SendNumber (NumberResponse) returns (stream NumberRequest);
+  rpc SendNumber (stream NumberRequest) returns (stream NumberResponse);
 }
 
 message NumberRequest {

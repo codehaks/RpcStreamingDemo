@@ -16,20 +16,34 @@ namespace MyServer
             _logger = logger;
         }
 
-        static Random RNG = new Random();
-
-        public override async Task SendNumber(NumberResponse request, IServerStreamWriter<NumberRequest> responseStream, ServerCallContext context)
+        public override async Task SendNumber(IAsyncStreamReader<NumberRequest> requestStream, IServerStreamWriter<NumberResponse> responseStream, ServerCallContext context)
         {
+
             for (var i = 0; i < 10; i++)
             {
                 var number = RNG.Next(5);
                 _logger.LogInformation($"Sending {number}");
-                await responseStream.WriteAsync((new NumberRequest { Value = number }));
+                await responseStream.WriteAsync((new NumberResponse { Result = number }));
                 await Task.Delay(300);
             }
 
-            _logger.LogWarning(request.Result.ToString());
+            
         }
+
+        static Random RNG = new Random();
+
+        //public override async Task SendNumber(NumberResponse request, IServerStreamWriter<NumberRequest> responseStream, ServerCallContext context)
+        //{
+        //    for (var i = 0; i < 10; i++)
+        //    {
+        //        var number = RNG.Next(5);
+        //        _logger.LogInformation($"Sending {number}");
+        //        await responseStream.WriteAsync((new NumberRequest { Value = number }));
+        //        await Task.Delay(300);
+        //    }
+
+        //    _logger.LogWarning(request.Result.ToString());
+        //}
 
 
 

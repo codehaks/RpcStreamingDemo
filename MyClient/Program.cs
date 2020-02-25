@@ -19,25 +19,23 @@ namespace MyClient
             var client = new MyServer.Numerics.NumericsClient(channel);
 
 
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+            //var response = new NumberResponse() { Result = -5 };
+            //using var streamingCall = client.SendNumber(response);
 
-            var response = new NumberResponse() { Result= -5 };
-            using var streamingCall = client.SendNumber(response, cancellationToken: cts.Token);
+            //try
+            //{
+            //    await foreach (var number in streamingCall.ResponseStream.ReadAllAsync())
+            //    {
 
-            try
-            {
-                await foreach (var number in streamingCall.ResponseStream.ReadAllAsync(cancellationToken: cts.Token))
-                {
-                 
-                    Console.WriteLine($"{number.Value}");
-                }
+            //        Console.WriteLine($"{number.Value}");
+            //    }
 
 
-            }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
-            {
-                Console.WriteLine("Stream cancelled.");
-            }
+            //}
+            //catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+            //{
+            //    Console.WriteLine("Stream cancelled.");
+            //}
 
 
             Console.ReadLine();
