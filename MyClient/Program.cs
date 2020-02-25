@@ -17,16 +17,15 @@ namespace MyClient
             var client = new MyServer.Numerics.NumericsClient(channel);
 
 
-            await ClientStreamingCallExample(client);
+            await StreamNumbersFromClientToServer(client);
 
             Console.ReadLine();
 
         }
 
-         static Random RNG = new Random();
+        static Random RNG = new Random();
 
-
-        private static async Task ClientStreamingCallExample(NumericsClient client)
+        private static async Task StreamNumbersFromClientToServer(NumericsClient client)
         {
             using (var call = client.SendNumber())
             {

@@ -15,7 +15,7 @@ message NumberRequest {
 }
 
 message NumberResponse {
-  bool result = 1;
+  int32 result = 1;
 }
 
 

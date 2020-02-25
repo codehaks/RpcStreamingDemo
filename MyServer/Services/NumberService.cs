@@ -18,15 +18,17 @@ namespace MyServer
 
         public override async Task<NumberResponse> SendNumber(IAsyncStreamReader<NumberRequest> requestStream, ServerCallContext context)
         {
+            var total = 0;
 
             await foreach (var number in requestStream.ReadAllAsync())
             {
-                _logger.LogInformation($"Incrementing count by {number.Value}");
-                
+                _logger.LogInformation($"Recieved number -> {number.Value}");
+                total += number.Value;
+
             }
 
-            return new NumberResponse { Result = true };
-        }      
+            return new NumberResponse { Result = total };
+        }
 
 
     }
