@@ -30,26 +30,26 @@ namespace MyClient
         {
             using var call = client.SendNumber();
 
-            var t1 = Task.Run(async () =>
-             {
-                 for (var i = 0; i < 100; i++)
-                 {
-                     var number = RNG.Next(5);
-                     Console.WriteLine($"Sending {number}");
-                     await call.RequestStream.WriteAsync(new NumberRequest { Value = number });
-                     await Task.Delay(new Random().Next(1,5)*100);
-                 }
-             });
 
-            var t2 = Task.Run(async () =>
-             {
-                 await foreach (var number in call.ResponseStream.ReadAllAsync())
-                 {
-                     Console.WriteLine($"Recieved By power -> {number.Result}");
-                 }
-             });
+            for (var i = 0; i < 100; i++)
+            {
+                var number = RNG.Next(5);
+                Console.WriteLine($"Sending {number}");
+                await call.RequestStream.WriteAsync(new NumberRequest { Value = number });
+                await Task.Delay(new Random().Next(1, 5) * 100);
+                var r = call.ResponseStream.Current.Result;
+                Console.WriteLine($"Recieved By power -> {r}");
+            }
 
-            await Task.WhenAll(t1, t2);
+            //var t2 = Task.Run(async () =>
+            // {
+            //     await foreach (var number in call.ResponseStream.ReadAllAsync())
+            //     {
+            //         Console.WriteLine($"Recieved By power -> {number.Result}");
+            //     }
+            // });
+
+            //await Task.WhenAll(t1, t2);
 
 
 
