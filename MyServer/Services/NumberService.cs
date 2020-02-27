@@ -26,7 +26,8 @@ namespace MyServer
                 await Task.Delay(new Random().Next(1, 5) * 100);
                 var response = new NumberResponse
                 {
-                    Result = number.Value * number.Value
+                    Result = number.Value * number.Value,
+                    Index=number.Index
                 };
                 await responseStream.WriteAsync(response);
 

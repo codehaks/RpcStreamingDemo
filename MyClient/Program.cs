@@ -32,11 +32,11 @@ namespace MyClient
 
             var t1 = Task.Run(async () =>
              {
-                 for (var i = 0; i < 100; i++)
+                 for (var i = 0; i < 20; i++)
                  {
-                     var number = RNG.Next(5);
+                     var number = RNG.Next(1,100);
                      Console.WriteLine($"Sending {number}");
-                     await call.RequestStream.WriteAsync(new NumberRequest { Value = number });
+                     await call.RequestStream.WriteAsync(new NumberRequest { Value = number,Index=i });
                      await Task.Delay(new Random().Next(1,5)*100);
                  }
              });
@@ -45,7 +45,7 @@ namespace MyClient
              {
                  await foreach (var number in call.ResponseStream.ReadAllAsync())
                  {
-                     Console.WriteLine($"Recieved By power -> {number.Result}");
+                     Console.WriteLine($"Recieved By power {Math.Sqrt(number.Result)} -> {number.Result}");
                  }
              });
 

@@ -11,11 +11,14 @@ service Numerics {
 }
 
 message NumberRequest {
+
   int32 value = 1;
+  int32 index = 2;
 }
 
 message NumberResponse {
   int32 result = 1;
+  int32 index = 2;
 }
 
 
