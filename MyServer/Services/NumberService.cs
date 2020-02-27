@@ -20,7 +20,7 @@ namespace MyServer
 
         public override async Task SendNumber(NumberResponse request, IServerStreamWriter<NumberRequest> responseStream, ServerCallContext context)
         {
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < request.Result; i++)
             {
                 var number = RNG.Next(5);
                 _logger.LogInformation($"Sending {number}");
