@@ -28,7 +28,7 @@ namespace MyServer
 
                 var client = new HttpClient
                 {
-                    Timeout = TimeSpan.FromSeconds(100)
+                    Timeout = TimeSpan.FromSeconds(5)
                 };
 
                 try
@@ -53,12 +53,6 @@ namespace MyServer
             }
 
             subject.OnCompleted();
-
-
-
-
-
-
         }
 
 
