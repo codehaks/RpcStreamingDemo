@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -8,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MyServer
 {
-    public class NumbersService : Numerics.NumericsBase
+    public class NumbersService : WebAnalytics.WebAnalyticsBase
     {
         private readonly ILogger<NumbersService> _logger;
         public NumbersService(ILogger<NumbersService> logger)
@@ -16,26 +19,47 @@ namespace MyServer
             _logger = logger;
         }
 
-        public override async Task SendNumber(IAsyncStreamReader<NumberRequest> requestStream, IServerStreamWriter<NumberResponse> responseStream, ServerCallContext context)
+        public override async Task SendLink(IAsyncStreamReader<LinkRequest> requestStream, IServerStreamWriter<LinkResponse> responseStream, ServerCallContext context)
         {
+            var subject = new Subject<string>();
 
-            await foreach (var number in requestStream.ReadAllAsync())
+            subject.Subscribe(async (url) =>
             {
-                _logger.LogInformation($"Recieved number -> {number.Value}");
 
-                await Task.Delay(new Random().Next(1, 5) * 100);
-                var response = new NumberResponse
+                var client = new HttpClient
                 {
-                    Result = number.Value * number.Value,
-                    Index=number.Index
+                    Timeout = TimeSpan.FromSeconds(100)
                 };
-                await responseStream.WriteAsync(response);
 
+                try
+                {
+                    var content = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead);
+                    var pageSize = content.Content.Headers.ContentLength.Value;
+
+                    await responseStream.WriteAsync(new LinkResponse { Url = url.ToString(), PageSize = Convert.ToInt32(pageSize) });
+                }
+                catch (Exception)
+                {
+
+                    await responseStream.WriteAsync(new LinkResponse { Url = url.ToString(), PageSize = Convert.ToInt32(-1) });
+                }
+            });
+
+
+            await foreach (var link in requestStream.ReadAllAsync())
+            {
+                subject.OnNext(link.Url);
+                _logger.LogInformation($"Recieved Link -> {link.Url}");
             }
 
+            subject.OnCompleted();
+
+
+
+
+
+
         }
-
-
 
 
 

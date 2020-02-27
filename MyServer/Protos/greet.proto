@@ -5,20 +5,22 @@ option csharp_namespace = "MyServer";
 
 package scalar;
 
-service Numerics {
+service WebAnalytics {
 
-  rpc SendNumber (stream NumberRequest) returns (stream NumberResponse);
+  rpc SendLink (stream LinkRequest) returns (stream LinkResponse);
 }
 
-message NumberRequest {
+message LinkRequest {
 
-  int32 value = 1;
-  int32 index = 2;
+  string url = 1;
+  
 }
 
-message NumberResponse {
-  int32 result = 1;
-  int32 index = 2;
+message LinkResponse {
+
+  int32 page_size = 1;
+  int32 time_length = 2;
+  string url = 3;
 }
 
 
