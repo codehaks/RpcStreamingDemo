@@ -21,8 +21,8 @@ namespace MyClient
 
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
 
-            var response = new NumberResponse() { Result= 20};
-            using var streamingCall = client.SendNumber(response, cancellationToken: cts.Token);
+            var request = new NumberResponse() { Result= 20};
+            using var streamingCall = client.SendNumber(request, cancellationToken: cts.Token);
 
             try
             {
