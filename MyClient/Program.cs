@@ -45,7 +45,7 @@ namespace MyClient
              {
                  await foreach (var number in call.ResponseStream.ReadAllAsync())
                  {
-                     Console.WriteLine($"Recieved By power {Math.Sqrt(number.Result)} -> {number.Result}");
+                     Console.WriteLine($"Recieved : [{number.Index}] power {Math.Sqrt(number.Result)} -> {number.Result}");
                  }
              });
 
