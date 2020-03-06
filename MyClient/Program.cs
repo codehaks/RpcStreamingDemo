@@ -19,9 +19,9 @@ namespace MyClient
 
             var client = new MyServer.Numerics.NumericsClient(channel);
 
-
+            Console.WriteLine("Sending");
             await StreamFile(client, @"d:\storm.jpg");
-
+            Console.WriteLine("Done!");
             Console.ReadLine();
 
         }
@@ -38,7 +38,7 @@ namespace MyClient
                 int sum = 0;                          // total number of bytes read
 
                 // read until Read method returns 0 (end of the stream has been reached)
-                while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
+                 while ((count = await fileStream.ReadAsync(buffer, sum, length - sum)) > 0)
                     sum += count;  // sum is a buffer offset for next reading
             }
             finally

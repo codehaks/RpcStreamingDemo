@@ -37,9 +37,8 @@ namespace MyServer
         public override async Task<SendResult> SendFile(Chunk request, ServerCallContext context)
         {
             var content = request.Content.ToArray();
-            await System.IO.File.WriteAllBytesAsync(_webenv.ContentRootPath + "/Files" + "storm1.jpg", content);
+            await System.IO.File.WriteAllBytesAsync(_webenv.ContentRootPath + "/Files/" + "storm1.jpg", content);
             return new SendResult { Success = true };
-            //return base.SendFile(request, context);
         }
 
 
