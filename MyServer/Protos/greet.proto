@@ -8,6 +8,15 @@ package scalar;
 service Numerics {
 
   rpc SendNumber (stream NumberRequest) returns (NumberResponse);
+  rpc SendFile (Chunk) returns (SendResult);
+}
+
+message Chunk {
+        bytes Content = 1;
+}
+
+message SendResult {
+        bool Success = 1;
 }
 
 message NumberRequest {
