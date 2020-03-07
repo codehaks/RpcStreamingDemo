@@ -20,13 +20,13 @@ namespace MyClient
             var client = new MyServer.Numerics.NumericsClient(channel);
 
             Console.WriteLine("Sending");
-            await StreamFile(client, @"d:\storm.jpg");
+            await SendFile(client, @"d:\storm.jpg");
             Console.WriteLine("Done!");
             Console.ReadLine();
 
         }
 
-        private static async Task StreamFile(NumericsClient client, string filePath)
+        private static async Task SendFile(NumericsClient client, string filePath)
         {
             byte[] buffer;
             FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
@@ -37,6 +37,7 @@ namespace MyClient
                 int count;                            
                 int sum = 0;                          
 
+                //System.IO.File.ReadAllBytes()
 
                  while ((count = await fileStream.ReadAsync(buffer, sum, length - sum)) > 0)
                     sum += count; 
@@ -46,10 +47,12 @@ namespace MyClient
                 fileStream.Close();
             }
 
-            client.SendFile(new Chunk
+            var result =await client.SendFileAsync(new Chunk
             {
                 Content = ByteString.CopyFrom(buffer)
             });
+
+            Console.WriteLine(result.Success);
          
         }
     }
