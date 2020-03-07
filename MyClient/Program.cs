@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf;
+using Grpc.Core;
 using Grpc.Net.Client;
 using MyServer;
 using System;
@@ -21,7 +22,8 @@ namespace MyClient
 
             Console.WriteLine("Sending");
             //await SendFile(client, @"d:\storm.jpg");
-            await StreamFile(client, @"d:\storm.jpg");
+            //await StreamFile(client, @"d:\storm.jpg");
+            await StreamFilePercent(client, @"d:\storm.jpg");
             Console.WriteLine("Done!");
             Console.ReadLine();
 
@@ -57,43 +59,67 @@ namespace MyClient
         {
 
             using Stream source = File.OpenRead(filePath);
-            using var call = client.SendFileStream();
-
-            byte[] buffer = new byte[2048];
+            using var call = client.SendFileStreamProgress();
+            var size = source.Length / 100;
+            byte[] buffer = new byte[size];
             int bytesRead;
 
-            int c = 0;
-            while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+            var t1 = Task.Run(async () =>
             {
-                
-                await call.RequestStream.WriteAsync(new Chunk { Content = Google.Protobuf.ByteString.CopyFrom(buffer) });
-                Console.WriteLine(c++);
-            }
 
-            await Task.Delay(100);
-            await call.RequestStream.CompleteAsync();
+                int c = 0;
+                while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+                {
+
+                    await call.RequestStream.WriteAsync(new Chunk { Content = Google.Protobuf.ByteString.CopyFrom(buffer) });
+                    Console.WriteLine(c++);
+                }
+                await call.RequestStream.CompleteAsync();
+            });
+
+            var t2 = Task.Run(async () =>
+            {
+                await foreach (var number in call.ResponseStream.ReadAllAsync())
+                {
+                    Console.WriteLine($" Progress : {number.Percent} %");
+                }
+            });
+
+            await Task.WhenAll(t1, t2);
+
+
         }
 
         private static async Task StreamFilePercent(NumericsClient client, string filePath)
         {
 
             using Stream source = File.OpenRead(filePath);
-            using var call = client.SendFileStream();
-
-            byte[] buffer = new byte[2048];
+            using var call = client.SendFileStreamProgress();
+            var size = source.Length / 100;
+            byte[] buffer = new byte[size];
             int bytesRead;
-
-
-
-            while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+            var t1 = Task.Run(async () =>
             {
+                while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+                {
 
-                await call.RequestStream.WriteAsync(new Chunk { Content = Google.Protobuf.ByteString.CopyFrom(buffer) });
-                
-            }
+                    await call.RequestStream.WriteAsync(new Chunk { Content = Google.Protobuf.ByteString.CopyFrom(buffer) });
+                    await Task.Delay(100);
+                }
 
-            await Task.Delay(100);
-            await call.RequestStream.CompleteAsync();
+                await call.RequestStream.CompleteAsync();
+            });
+
+            var t2 = Task.Run(async () =>
+            {
+                await foreach (var number in call.ResponseStream.ReadAllAsync())
+                {
+                    Console.WriteLine($" Progress : {number.Percent} %");
+                }
+            });
+
+            await Task.WhenAll(t1, t2);
+
         }
 
 
