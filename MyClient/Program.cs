@@ -65,34 +65,16 @@ namespace MyClient
             int c = 0;
             while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
             {
-                //dest.Write(buffer, 0, bytesRead);
+                
                 await call.RequestStream.WriteAsync(new Chunk { Content = Google.Protobuf.ByteString.CopyFrom(buffer) });
                 Console.WriteLine(c++);
             }
 
             await Task.Delay(100);
+            await call.RequestStream.CompleteAsync();
         }
 
 
-        //static Random RNG = new Random();
-
-        //private static async Task StreamNumbersFromClientToServer(NumericsClient client)
-        //{
-        //    using (var call = client.SendNumber())
-        //    {
-        //        for (var i = 0; i < 10; i++)
-        //        {
-        //            var number = RNG.Next(5);
-        //            Console.WriteLine($"Sending {number}");
-        //            await call.RequestStream.WriteAsync(new NumberRequest { Value = number });
-        //            await Task.Delay(1000);
-        //        }
-
-        //        await call.RequestStream.CompleteAsync();
-
-        //        var response = await call;
-        //        Console.WriteLine($"Result: {response.Result}");
-        //    }
-        //}
+      
     }
 }
