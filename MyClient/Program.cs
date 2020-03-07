@@ -68,11 +68,10 @@ namespace MyClient
                 
                 await call.RequestStream.WriteAsync(new Chunk { Content = Google.Protobuf.ByteString.CopyFrom(buffer) });
 
-                await Task.Delay(200);
+                await Task.Delay(100);
                 Console.WriteLine(c++);
             }
 
-            await Task.Delay(100);
             await call.RequestStream.CompleteAsync();
         }
 
