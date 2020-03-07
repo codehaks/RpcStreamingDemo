@@ -55,7 +55,7 @@ namespace MyServer
 
                     fs.Write(chunk.Content.ToArray(), 0, chunk.Content.Length);
 
-
+                    await Task.Delay(200);
                     Console.WriteLine(c++);
                 }
             }
