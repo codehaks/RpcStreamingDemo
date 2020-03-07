@@ -32,14 +32,14 @@ namespace MyClient
             FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             try
             {
-                int length = (int)fileStream.Length;  // get file length
-                buffer = new byte[length];            // create buffer
-                int count;                            // actual number of bytes read
-                int sum = 0;                          // total number of bytes read
+                int length = (int)fileStream.Length;  
+                buffer = new byte[length];            
+                int count;                            
+                int sum = 0;                          
 
-                // read until Read method returns 0 (end of the stream has been reached)
+
                  while ((count = await fileStream.ReadAsync(buffer, sum, length - sum)) > 0)
-                    sum += count;  // sum is a buffer offset for next reading
+                    sum += count; 
             }
             finally
             {
@@ -50,32 +50,7 @@ namespace MyClient
             {
                 Content = ByteString.CopyFrom(buffer)
             });
-
-            //await call.RequestStream.WriteAsync(new Chunk { Content = ByteString.CopyFrom(buffer)});
-
-            //await call.RequestStream.CompleteAsync();
+         
         }
-
-
-        //static Random RNG = new Random();
-
-        //private static async Task StreamNumbersFromClientToServer(NumericsClient client)
-        //{
-        //    using (var call = client.SendNumber())
-        //    {
-        //        for (var i = 0; i < 10; i++)
-        //        {
-        //            var number = RNG.Next(5);
-        //            Console.WriteLine($"Sending {number}");
-        //            await call.RequestStream.WriteAsync(new NumberRequest { Value = number });
-        //            await Task.Delay(1000);
-        //        }
-
-        //        await call.RequestStream.CompleteAsync();
-
-        //        var response = await call;
-        //        Console.WriteLine($"Result: {response.Result}");
-        //    }
-        //}
     }
 }
