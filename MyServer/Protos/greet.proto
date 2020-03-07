@@ -10,10 +10,15 @@ service Numerics {
   rpc SendNumber (stream NumberRequest) returns (NumberResponse);
   rpc SendFile (Chunk) returns (SendResult);
   rpc SendFileStream (stream Chunk) returns (SendResult);
+  rpc SendFileStreamProgress (stream Chunk) returns (stream Progress);
 }
 
 message Chunk {
         bytes Content = 1;
+}
+
+message Progress {
+  int32 percent = 1;
 }
 
 message SendResult {
