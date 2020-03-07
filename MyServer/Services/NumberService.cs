@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
@@ -38,6 +39,33 @@ namespace MyServer
         {
             var content = request.Content.ToArray();
             await System.IO.File.WriteAllBytesAsync(_webenv.ContentRootPath + "/Files/" + "storm1.jpg", content);
+            return new SendResult { Success = true };
+        }
+
+        public override async Task<SendResult> SendFileStream(IAsyncStreamReader<Chunk> requestStream, ServerCallContext context)
+        {
+            var fileName = _webenv.ContentRootPath + "/Files/" + "storm100.jpg";
+            using var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write);
+            int c = 0;
+
+            try
+            {
+                await foreach (var chunk in requestStream.ReadAllAsync())
+                {
+
+                    fs.Write(chunk.Content.ToArray(), 0, chunk.Content.Length);
+
+
+                    Console.WriteLine(c++);
+                }
+            }
+            finally 
+            {
+
+                fs.Close();
+            }
+
+
             return new SendResult { Success = true };
         }
 

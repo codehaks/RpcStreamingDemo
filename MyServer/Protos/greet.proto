@@ -9,6 +9,7 @@ service Numerics {
 
   rpc SendNumber (stream NumberRequest) returns (NumberResponse);
   rpc SendFile (Chunk) returns (SendResult);
+  rpc SendFileStream (stream Chunk) returns (SendResult);
 }
 
 message Chunk {

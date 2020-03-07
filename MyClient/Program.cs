@@ -20,13 +20,14 @@ namespace MyClient
             var client = new MyServer.Numerics.NumericsClient(channel);
 
             Console.WriteLine("Sending");
+            //await SendFile(client, @"d:\storm.jpg");
             await StreamFile(client, @"d:\storm.jpg");
             Console.WriteLine("Done!");
             Console.ReadLine();
 
         }
 
-        private static async Task StreamFile(NumericsClient client, string filePath)
+        private static async Task SendFile(NumericsClient client, string filePath)
         {
             byte[] buffer;
             FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
@@ -38,7 +39,7 @@ namespace MyClient
                 int sum = 0;                          // total number of bytes read
 
                 // read until Read method returns 0 (end of the stream has been reached)
-                 while ((count = await fileStream.ReadAsync(buffer, sum, length - sum)) > 0)
+                while ((count = await fileStream.ReadAsync(buffer, sum, length - sum)) > 0)
                     sum += count;  // sum is a buffer offset for next reading
             }
             finally
@@ -50,10 +51,26 @@ namespace MyClient
             {
                 Content = ByteString.CopyFrom(buffer)
             });
+        }
 
-            //await call.RequestStream.WriteAsync(new Chunk { Content = ByteString.CopyFrom(buffer)});
+        private static async Task StreamFile(NumericsClient client, string filePath)
+        {
 
-            //await call.RequestStream.CompleteAsync();
+            using Stream source = File.OpenRead(filePath);
+            using var call = client.SendFileStream();
+
+            byte[] buffer = new byte[2048];
+            int bytesRead;
+
+            int c = 0;
+            while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                //dest.Write(buffer, 0, bytesRead);
+                await call.RequestStream.WriteAsync(new Chunk { Content = Google.Protobuf.ByteString.CopyFrom(buffer) });
+                Console.WriteLine(c++);
+            }
+
+            await Task.Delay(100);
         }
 
 
