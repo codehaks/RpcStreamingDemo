@@ -93,14 +93,14 @@ namespace MyClient
         private static async Task StreamFilePercent(NumericsClient client, string filePath)
         {
 
-            using Stream source = File.OpenRead(filePath);
+            using Stream fileStreamData = File.OpenRead(filePath);
             using var call = client.SendFileStreamProgress();
-            var size = source.Length / 100;
+            var size = 1024;
             byte[] buffer = new byte[size];
             int bytesRead;
             var t1 = Task.Run(async () =>
             {
-                while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+                while ((bytesRead = fileStreamData.Read(buffer, 0, buffer.Length)) > 0)
                 {
 
                     await call.RequestStream.WriteAsync(new Chunk { Content = Google.Protobuf.ByteString.CopyFrom(buffer) });
