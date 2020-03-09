@@ -26,6 +26,8 @@ namespace MyClient
                       Console.WriteLine($"Checking {link}");
                       await call.RequestStream.WriteAsync(new LinkRequest { Url = link });
                   }
+
+                  await call.RequestStream.CompleteAsync();
               });
 
             var receiveTask = Task.Run(async () =>
