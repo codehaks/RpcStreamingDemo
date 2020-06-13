@@ -34,7 +34,31 @@ namespace MyServer
 
             return new NumberResponse { Result = total };
         }
+   
+        public override async Task SendFileStreamProgress(IAsyncStreamReader<Chunk> requestStream, IServerStreamWriter<Progress> responseStream, ServerCallContext context)
+        {
+            var fileName = _webenv.ContentRootPath + "/Files/" + "bloom.jpg";
+            using var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write);
+            int percent = 0;
 
+
+            await foreach (var chunk in requestStream.ReadAllAsync())
+            {
+
+                fs.Write(chunk.Content.ToArray(), 0, chunk.Content.Length);
+                var response = new Progress
+                {
+                    Percent = percent++
+                };
+                await responseStream.WriteAsync(response);
+            };           
+
+
+        }
+
+
+
+        #region Obsolete
         public override async Task<SendResult> SendFile(Chunk request, ServerCallContext context)
         {
             var content = request.Content.ToArray();
@@ -44,7 +68,7 @@ namespace MyServer
 
         public override async Task<SendResult> SendFileStream(IAsyncStreamReader<Chunk> requestStream, ServerCallContext context)
         {
-            var fileName = _webenv.ContentRootPath + "/Files/" + "storm100.jpg";
+            var fileName = _webenv.ContentRootPath + "/Files/" + "bloom.jpg";
             using var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write);
             int c = 0;
 
@@ -69,27 +93,7 @@ namespace MyServer
             return new SendResult { Success = true };
         }
 
-        public override async Task SendFileStreamProgress(IAsyncStreamReader<Chunk> requestStream, IServerStreamWriter<Progress> responseStream, ServerCallContext context)
-        {
-            var fileName = _webenv.ContentRootPath + "/Files/" + "storm200.jpg";
-            using var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write);
-            int percent = 0;
-
-
-            await foreach (var chunk in requestStream.ReadAllAsync())
-            {
-
-                fs.Write(chunk.Content.ToArray(), 0, chunk.Content.Length);
-                var response = new Progress
-                {
-                    Percent = percent++
-                };
-                await responseStream.WriteAsync(response);
-            };           
-
-
-        }
-
+        #endregion
 
     }
 }
